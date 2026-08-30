@@ -229,17 +229,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const textColor = entry.processId === -1 ? 'text-slate-600' : 'text-white';
             
             const tooltip = entry.processId === -1 
-                ? \`CPU Idle (\${entry.startTime} - \${entry.endTime})\`
-                : \`Process P\${entry.processId} executing (\${entry.startTime} - \${entry.endTime})\`;
+                ? `CPU Idle (${entry.startTime} - ${entry.endTime})`
+                : `Process P${entry.processId} executing (${entry.startTime} - ${entry.endTime})`;
 
             const block = document.createElement('div');
             block.title = tooltip;
-            block.className = \`gantt-block h-full relative border-r border-white/20 flex flex-col justify-center items-center \${textColor} cursor-pointer\`;
+            block.className = `gantt-block h-full relative border-r border-white/20 flex flex-col justify-center items-center ${textColor} cursor-pointer`;
             block.style.width = widthPct + '%';
             block.style.backgroundColor = color;
 
             if (widthPct > 2) { // only show text if block is wide enough
-                block.innerHTML = \`<span class="font-bold text-xs tracking-wider z-10 drop-shadow-md">\${label}</span>\`;
+                block.innerHTML = `<span class="font-bold text-xs tracking-wider z-10 drop-shadow-md">${label}</span>`;
             }
             
             container.appendChild(block);
