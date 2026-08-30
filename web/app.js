@@ -67,18 +67,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderProcessTable() {
         tbodyProc.innerHTML = '';
-        processes.forEach(p => {
-            tbodyProc.innerHTML += `
-                <tr>
-                    <td class="px-3 py-2 font-medium">P${p.id}</td>
-                    <td class="px-3 py-2">${p.arrivalTime}</td>
-                    <td class="px-3 py-2">${p.burstTime}</td>
-                    <td class="px-3 py-2 text-right">
-                        <button onclick="removeProcess(${p.id})" class="text-red-500 hover:text-red-700 font-bold">&times;</button>
-                    </td>
-                </tr>
-            `;
-        });
+        
+        if (processes.length === 0) {
+            document.getElementById('empty-process-msg').classList.remove('hidden');
+        } else {
+            document.getElementById('empty-process-msg').classList.add('hidden');
+            processes.forEach(p => {
+                tbodyProc.innerHTML += `
+                    <tr>
+                        <td class="px-4 py-3 font-semibold text-slate-700">P${p.id}</td>
+                        <td class="px-4 py-3 text-slate-600">${p.arrivalTime}</td>
+                        <td class="px-4 py-3 text-slate-600">${p.burstTime}</td>
+                        <td class="px-4 py-3 text-right">
+                            <button onclick="removeProcess(${p.id})" class="text-slate-400 hover:text-red-500 font-bold transition">&times;</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
     }
 
     // Run Simulation
@@ -99,6 +105,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (algo === 'ALL') {
             panelSingle.classList.add('hidden');
+            document.getElementById('panel-comparison').classList.remove('hidden');
+            panelRec.classList.remove('hidden');
             
             // Run Comparison
             const entries = window.SchedulerAPI.compareAll(processes, rrQ, mlfqQ);
@@ -108,17 +116,16 @@ document.addEventListener('DOMContentLoaded', () => {
             tb.innerHTML = '';
             entries.forEach(e => {
                 tb.innerHTML += `
-                    <tr>
-                        <td class="px-3 py-2 font-medium">${e.algorithmName}</td>
-                        <td class="px-3 py-2">${e.metrics.avgWaitingTime.toFixed(2)}</td>
-                        <td class="px-3 py-2">${e.metrics.avgTurnaroundTime.toFixed(2)}</td>
-                        <td class="px-3 py-2">${e.metrics.avgResponseTime.toFixed(2)}</td>
-                        <td class="px-3 py-2">${e.metrics.contextSwitches}</td>
-                        <td class="px-3 py-2">${e.metrics.fairnessIndex.toFixed(2)}</td>
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="px-5 py-3 font-medium text-slate-800">${e.algorithmName}</td>
+                        <td class="px-5 py-3 text-slate-600">${e.metrics.avgWaitingTime.toFixed(2)}</td>
+                        <td class="px-5 py-3 text-slate-600">${e.metrics.avgTurnaroundTime.toFixed(2)}</td>
+                        <td class="px-5 py-3 text-slate-600">${e.metrics.avgResponseTime.toFixed(2)}</td>
+                        <td class="px-5 py-3 text-slate-600">${e.metrics.contextSwitches}</td>
+                        <td class="px-5 py-3 text-slate-600">${e.metrics.fairnessIndex.toFixed(2)}</td>
                     </tr>
                 `;
             });
-            panelComp.classList.remove('hidden');
 
             // Render Recommendation
             const rec = window.SchedulerAPI.getRecommendation(entries);
@@ -129,11 +136,9 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('rec-rt').innerText = rec.bestResponseTime;
             document.getElementById('rec-cs').innerText = rec.leastContextSwitches;
             document.getElementById('rec-fair').innerText = rec.bestFairness;
-            
-            panelRec.classList.remove('hidden');
 
         } else {
-            panelComp.classList.add('hidden');
+            document.getElementById('panel-comparison').classList.add('hidden');
             panelRec.classList.add('hidden');
             
             // Run Single
@@ -158,14 +163,14 @@ document.addEventListener('DOMContentLoaded', () => {
             tb.innerHTML = '';
             result.result.results.forEach(p => {
                 tb.innerHTML += `
-                    <tr>
-                        <td class="px-3 py-2 font-medium">P${p.id}</td>
-                        <td class="px-3 py-2">${p.arrivalTime}</td>
-                        <td class="px-3 py-2">${p.burstTime}</td>
-                        <td class="px-3 py-2 font-semibold text-indigo-600">${p.completionTime}</td>
-                        <td class="px-3 py-2">${p.turnaroundTime}</td>
-                        <td class="px-3 py-2">${p.waitingTime}</td>
-                        <td class="px-3 py-2">${p.responseTime}</td>
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="px-5 py-3 font-semibold text-slate-700">P${p.id}</td>
+                        <td class="px-5 py-3 text-slate-600">${p.arrivalTime}</td>
+                        <td class="px-5 py-3 text-slate-600">${p.burstTime}</td>
+                        <td class="px-5 py-3 font-bold text-accent">${p.completionTime}</td>
+                        <td class="px-5 py-3 text-slate-600">${p.turnaroundTime}</td>
+                        <td class="px-5 py-3 text-slate-600">${p.waitingTime}</td>
+                        <td class="px-5 py-3 text-slate-600">${p.responseTime}</td>
                     </tr>
                 `;
             });
@@ -177,49 +182,67 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Helper to generate distinct colors for PIDs
     function getColorForPid(pid) {
-        if (pid === -1) return '#e2e8f0'; // IDLE color (slate-200)
+        if (pid === -1) return '#cbd5e1'; // IDLE color (slate-300)
         const colors = [
-            '#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', 
-            '#ec4899', '#06b6d4', '#f97316', '#84cc16', '#14b8a6'
+            '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', 
+            '#06b6d4', '#f97316', '#84cc16', '#14b8a6', '#6366f1'
         ];
         return colors[(pid - 1) % colors.length];
     }
 
     function renderGanttChart(timeline, totalTime) {
         const container = document.getElementById('gantt-container');
+        const axis = document.getElementById('gantt-axis');
         container.innerHTML = '';
+        axis.innerHTML = '';
         
         if (timeline.length === 0 || totalTime === 0) return;
+
+        // Generate Time Axis Ticks
+        const tickCount = Math.min(totalTime, 20); // max 20 ticks
+        const interval = Math.ceil(totalTime / tickCount);
+        
+        for (let i = 0; i <= totalTime; i += interval) {
+            const leftPct = (i / totalTime) * 100;
+            axis.innerHTML += `
+                <div class="absolute top-0 flex flex-col items-center" style="left: ${leftPct}%; transform: translateX(-50%);">
+                    <div class="h-1.5 w-px bg-slate-300"></div>
+                    <span class="text-[10px] font-medium text-slate-500 mt-0.5">${i}</span>
+                </div>
+            `;
+        }
+        
+        // Ensure final tick is there if it wasn't hit perfectly
+        if (totalTime % interval !== 0) {
+            axis.innerHTML += `
+                <div class="absolute top-0 flex flex-col items-center" style="left: 100%; transform: translateX(-50%);">
+                    <div class="h-1.5 w-px bg-slate-300"></div>
+                    <span class="text-[10px] font-medium text-slate-500 mt-0.5">${totalTime}</span>
+                </div>
+            `;
+        }
 
         timeline.forEach(entry => {
             const widthPct = ((entry.endTime - entry.startTime) / totalTime) * 100;
             const color = getColorForPid(entry.processId);
             const label = entry.processId === -1 ? 'IDLE' : 'P' + entry.processId;
-            const textColor = entry.processId === -1 ? 'text-slate-500' : 'text-white';
+            const textColor = entry.processId === -1 ? 'text-slate-600' : 'text-white';
+            
+            const tooltip = entry.processId === -1 
+                ? \`CPU Idle (\${entry.startTime} - \${entry.endTime})\`
+                : \`Process P\${entry.processId} executing (\${entry.startTime} - \${entry.endTime})\`;
 
             const block = document.createElement('div');
-            block.className = `gantt-block h-full relative border-r border-white/20 flex flex-col justify-center items-center rounded-sm ${textColor}`;
+            block.title = tooltip;
+            block.className = \`gantt-block h-full relative border-r border-white/20 flex flex-col justify-center items-center \${textColor} cursor-pointer\`;
             block.style.width = widthPct + '%';
             block.style.backgroundColor = color;
-            block.style.minWidth = '20px';
 
-            // Process Label
-            block.innerHTML = `<span class="font-bold text-sm tracking-wide z-10">${label}</span>`;
+            if (widthPct > 2) { // only show text if block is wide enough
+                block.innerHTML = \`<span class="font-bold text-xs tracking-wider z-10 drop-shadow-md">\${label}</span>\`;
+            }
             
-            // Start Time Marker
-            const startMarker = document.createElement('div');
-            startMarker.className = 'absolute -bottom-6 left-0 text-xs text-slate-500 font-mono transform -translate-x-1/2';
-            startMarker.innerText = entry.startTime;
-            block.appendChild(startMarker);
-
             container.appendChild(block);
         });
-
-        // Add the final end time marker on the very last block
-        const lastEntry = timeline[timeline.length - 1];
-        const endMarker = document.createElement('div');
-        endMarker.className = 'absolute -bottom-6 right-0 text-xs text-slate-500 font-mono transform translate-x-1/2';
-        endMarker.innerText = lastEntry.endTime;
-        container.lastChild.appendChild(endMarker);
     }
 });
