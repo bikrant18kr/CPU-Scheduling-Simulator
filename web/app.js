@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Process Table
             const tb = document.getElementById('result-tbody');
             tb.innerHTML = '';
-            result.results.forEach(p => {
+            result.result.results.forEach(p => {
                 tb.innerHTML += `
                     <tr>
                         <td class="px-3 py-2 font-medium">P${p.id}</td>
@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
             });
 
-            renderGanttChart(result.timeline, result.totalTime);
+            renderGanttChart(result.result.timeline, result.result.totalTime);
             panelSingle.classList.remove('hidden');
         }
     });
