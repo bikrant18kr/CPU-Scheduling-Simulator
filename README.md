@@ -145,6 +145,19 @@ The recommendation engine uses a **weighted scoring heuristic**:
 
 **Limitations**: This is a heuristic, not a definitive answer. The weights can be adjusted based on workload priorities (e.g., interactive systems should weight response time higher). The recommendation is specific to the given input workload.
 
+## Web Interface & Vercel Deployment
+
+This project includes a full frontend Web GUI built with HTML, Tailwind CSS, and Vanilla JavaScript, located in the `web/` directory. The web version ports the C++ algorithms directly to the browser for instant visualization without needing a compiler.
+
+### Live Demo (Vercel)
+
+You can deploy the interactive simulator to Vercel in seconds:
+1. Import this repository into Vercel.
+2. In the Vercel project configuration, set the **Root Directory** to `web`.
+3. Click **Deploy**.
+
+The web interface features interactive process entry, visual colored Gantt charts, real-time comparisons, and the AI recommendation module.
+
 ## Project Structure
 
 ```
